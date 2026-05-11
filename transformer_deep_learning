@@ -1,0 +1,244 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPZDcE8mJ9IYycaLeasPJL+",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/awaiskhan131931-ctrl/transformer/blob/main/transformer_deep_learning\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import tensorflow as tf\n",
+        "from tensorflow.keras.preprocessing.text import Tokenizer"
+      ],
+      "metadata": {
+        "id": "gOQDue-vU49r"
+      },
+      "execution_count": 18,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "**take a sample**"
+      ],
+      "metadata": {
+        "id": "jqR5F3HyWy7t"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "english = [\n",
+        "    \"hello\",\n",
+        "    \"how are you\",\n",
+        "    \"i am fine\",\n",
+        "    \"what is your name\",\n",
+        "    \"my name is awais\",\n",
+        "    \"where are you going\",\n",
+        "    \"i am going to school\",\n",
+        "    \"do you like tea\",\n",
+        "    \"yes i like tea\",\n",
+        "    \"i love pakistan\",\n",
+        "    \"good morning\",\n",
+        "    \"good night\",\n",
+        "    \"see you later\",\n",
+        "    \"come here\",\n",
+        "    \"sit down\",\n",
+        "    \"open the door\",\n",
+        "    \"close the window\",\n",
+        "    \"what are you doing\",\n",
+        "    \"i am reading a book\",\n",
+        "    \"this is my friend\",\n",
+        "    \"i am hungry\",\n",
+        "    \"i am tired\",\n",
+        "    \"please help me\",\n",
+        "    \"how old are you\",\n",
+        "    \"i am twenty years old\",\n",
+        "    \"where do you live\",\n",
+        "    \"i live in swat\",\n",
+        "    \"what is this\",\n",
+        "    \"this is a computer\",\n",
+        "    \"i like programming\",\n",
+        "    \"tensorflow is powerful\",\n",
+        "    \"deep learning is interesting\",\n",
+        "    \"machine learning is the future\",\n",
+        "    \"the weather is very hot\",\n",
+        "    \"today is friday\",\n",
+        "    \"i want to learn ai\",\n",
+        "    \"can you teach me\",\n",
+        "    \"i have a laptop\",\n",
+        "    \"my laptop is hp\",\n",
+        "    \"the internet is slow\",\n",
+        "    \"i am watching a movie\",\n",
+        "    \"he is my brother\",\n",
+        "    \"she is my sister\",\n",
+        "    \"we are students\",\n",
+        "    \"they are playing cricket\",\n",
+        "    \"the baby is sleeping\",\n",
+        "    \"please give me water\",\n",
+        "    \"i need some food\",\n",
+        "    \"this car is very fast\",\n",
+        "    \"the cat is under the table\"\n",
+        "]\n",
+        "\n",
+        "poshto = [\n",
+        "    \"<start> سلام <end>\",\n",
+        "    \"<start> ته څنګه يې <end>\",\n",
+        "    \"<start> زه ښه يم <end>\",\n",
+        "    \"<start> ستا نوم څه دی <end>\",\n",
+        "    \"<start> زما نوم اويس دی <end>\",\n",
+        "    \"<start> ته چېرته ځې <end>\",\n",
+        "    \"<start> زه ښوونځي ته ځم <end>\",\n",
+        "    \"<start> ته چای خوښوې <end>\",\n",
+        "    \"<start> هو زه چای خوښوم <end>\",\n",
+        "    \"<start> زه پاکستان سره مينه لرم <end>\",\n",
+        "    \"<start> سهار مو پخير <end>\",\n",
+        "    \"<start> شپه مو پخير <end>\",\n",
+        "    \"<start> بيا به سره ګورو <end>\",\n",
+        "    \"<start> دلته راشه <end>\",\n",
+        "    \"<start> کښېنه <end>\",\n",
+        "    \"<start> دروازه خلاصه کړه <end>\",\n",
+        "    \"<start> کړکۍ بنده کړه <end>\",\n",
+        "    \"<start> ته څه کوې <end>\",\n",
+        "    \"<start> زه کتاب لولم <end>\",\n",
+        "    \"<start> دا زما ملګری دی <end>\",\n",
+        "    \"<start> زه وږی يم <end>\",\n",
+        "    \"<start> زه ستړی يم <end>\",\n",
+        "    \"<start> مهرباني وکړه مرسته راسره وکړه <end>\",\n",
+        "    \"<start> ستا عمر څو کاله دی <end>\",\n",
+        "    \"<start> زما عمر شل کاله دی <end>\",\n",
+        "    \"<start> ته چېرته اوسېږې <end>\",\n",
+        "    \"<start> زه په سوات کې اوسېږم <end>\",\n",
+        "    \"<start> دا څه دي <end>\",\n",
+        "    \"<start> دا کمپيوټر دی <end>\",\n",
+        "    \"<start> زه پروګرامنګ خوښوم <end>\",\n",
+        "    \"<start> ټېنسرفلو ځواکمن دی <end>\",\n",
+        "    \"<start> ژوره زده کړه زړه پورې ده <end>\",\n",
+        "    \"<start> ماشين زده کړه راتلونکې ده <end>\",\n",
+        "    \"<start> هوا ډېره ګرمه ده <end>\",\n",
+        "    \"<start> نن جمعه ده <end>\",\n",
+        "    \"<start> زه مصنوعي ځيرکتيا زده کول غواړم <end>\",\n",
+        "    \"<start> ته ما ته زده کړه راکولی شې <end>\",\n",
+        "    \"<start> زما سره لپټاپ شته <end>\",\n",
+        "    \"<start> زما لپټاپ HP دی <end>\",\n",
+        "    \"<start> انټرنېټ ډېر ورو دی <end>\",\n",
+        "    \"<start> زه فلم ګورم <end>\",\n",
+        "    \"<start> هغه زما ورور دی <end>\",\n",
+        "    \"<start> هغه زما خور ده <end>\",\n",
+        "    \"<start> موږ زده کوونکي يو <end>\",\n",
+        "    \"<start> هغوی کرکټ لوبوي <end>\",\n",
+        "    \"<start> ماشوم ويده دی <end>\",\n",
+        "    \"<start> مهرباني وکړئ اوبه راکړئ <end>\",\n",
+        "    \"<start> زه خوراک ته اړتيا لرم <end>\",\n",
+        "    \"<start> دا موټر ډېر تېز دی <end>\",\n",
+        "    \"<start> پيشو د مېز لاندې ده <end>\"\n",
+        "]"
+      ],
+      "metadata": {
+        "id": "QmJ2p75XWBGz"
+      },
+      "execution_count": 19,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "**tokenizaion**"
+      ],
+      "metadata": {
+        "id": "N5kUeR0mck4v"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "eng_tokenizer = Tokenizer()\n",
+        "eng_tokenizer.fit_on_texts(english)\n",
+        "\n",
+        "poshto_tokenizer = Tokenizer()\n",
+        "poshto_tokenizer.fit_on_texts(poshto)\n",
+        "\n",
+        "\n",
+        "print(\"English Tokenizer:\")\n",
+        "print(eng_tokenizer.word_index)\n",
+        "print(eng_tokenizer.word_counts)\n",
+        "print(len(eng_tokenizer.word_index) + 1)\n",
+        "\n",
+        "\n",
+        "#====================\n",
+        "\n",
+        "print(\"\\nPoshto Tokenizer:\")\n",
+        "print(poshto_tokenizer.word_index)\n",
+        "print(poshto_tokenizer.word_counts)\n",
+        "print(len(poshto_tokenizer.word_index) + 1)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Tt_65qDsbplK",
+        "outputId": "590c5018-9181-44e6-cf12-1a2ad7eefc99"
+      },
+      "execution_count": 27,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "English Tokenizer:\n",
+            "{'is': 1, 'i': 2, 'you': 3, 'the': 4, 'am': 5, 'are': 6, 'my': 7, 'a': 8, 'this': 9, 'what': 10, 'like': 11, 'me': 12, 'how': 13, 'name': 14, 'where': 15, 'going': 16, 'to': 17, 'do': 18, 'tea': 19, 'good': 20, 'please': 21, 'old': 22, 'live': 23, 'learning': 24, 'very': 25, 'laptop': 26, 'hello': 27, 'fine': 28, 'your': 29, 'awais': 30, 'school': 31, 'yes': 32, 'love': 33, 'pakistan': 34, 'morning': 35, 'night': 36, 'see': 37, 'later': 38, 'come': 39, 'here': 40, 'sit': 41, 'down': 42, 'open': 43, 'door': 44, 'close': 45, 'window': 46, 'doing': 47, 'reading': 48, 'book': 49, 'friend': 50, 'hungry': 51, 'tired': 52, 'help': 53, 'twenty': 54, 'years': 55, 'in': 56, 'swat': 57, 'computer': 58, 'programming': 59, 'tensorflow': 60, 'powerful': 61, 'deep': 62, 'interesting': 63, 'machine': 64, 'future': 65, 'weather': 66, 'hot': 67, 'today': 68, 'friday': 69, 'want': 70, 'learn': 71, 'ai': 72, 'can': 73, 'teach': 74, 'have': 75, 'hp': 76, 'internet': 77, 'slow': 78, 'watching': 79, 'movie': 80, 'he': 81, 'brother': 82, 'she': 83, 'sister': 84, 'we': 85, 'students': 86, 'they': 87, 'playing': 88, 'cricket': 89, 'baby': 90, 'sleeping': 91, 'give': 92, 'water': 93, 'need': 94, 'some': 95, 'food': 96, 'car': 97, 'fast': 98, 'cat': 99, 'under': 100, 'table': 101}\n",
+            "OrderedDict({'hello': 1, 'how': 2, 'are': 6, 'you': 8, 'i': 14, 'am': 7, 'fine': 1, 'what': 3, 'is': 17, 'your': 1, 'name': 2, 'my': 5, 'awais': 1, 'where': 2, 'going': 2, 'to': 2, 'school': 1, 'do': 2, 'like': 3, 'tea': 2, 'yes': 1, 'love': 1, 'pakistan': 1, 'good': 2, 'morning': 1, 'night': 1, 'see': 1, 'later': 1, 'come': 1, 'here': 1, 'sit': 1, 'down': 1, 'open': 1, 'the': 8, 'door': 1, 'close': 1, 'window': 1, 'doing': 1, 'reading': 1, 'a': 4, 'book': 1, 'this': 4, 'friend': 1, 'hungry': 1, 'tired': 1, 'please': 2, 'help': 1, 'me': 3, 'old': 2, 'twenty': 1, 'years': 1, 'live': 2, 'in': 1, 'swat': 1, 'computer': 1, 'programming': 1, 'tensorflow': 1, 'powerful': 1, 'deep': 1, 'learning': 2, 'interesting': 1, 'machine': 1, 'future': 1, 'weather': 1, 'very': 2, 'hot': 1, 'today': 1, 'friday': 1, 'want': 1, 'learn': 1, 'ai': 1, 'can': 1, 'teach': 1, 'have': 1, 'laptop': 2, 'hp': 1, 'internet': 1, 'slow': 1, 'watching': 1, 'movie': 1, 'he': 1, 'brother': 1, 'she': 1, 'sister': 1, 'we': 1, 'students': 1, 'they': 1, 'playing': 1, 'cricket': 1, 'baby': 1, 'sleeping': 1, 'give': 1, 'water': 1, 'need': 1, 'some': 1, 'food': 1, 'car': 1, 'fast': 1, 'cat': 1, 'under': 1, 'table': 1})\n",
+            "102\n",
+            "\n",
+            "Poshto Tokenizer:\n",
+            "{'start': 1, 'end': 2, 'زه': 3, 'دی': 4, 'ته': 5, 'زما': 6, 'ده': 7, 'کړه': 8, 'زده': 9, 'دا': 10, 'يم': 11, 'څه': 12, 'سره': 13, 'ستا': 14, 'نوم': 15, 'چېرته': 16, 'چای': 17, 'خوښوم': 18, 'لرم': 19, 'مو': 20, 'پخير': 21, 'مهرباني': 22, 'وکړه': 23, 'عمر': 24, 'کاله': 25, 'لپټاپ': 26, 'ډېر': 27, 'هغه': 28, 'سلام': 29, 'څنګه': 30, 'يې': 31, 'ښه': 32, 'اويس': 33, 'ځې': 34, 'ښوونځي': 35, 'ځم': 36, 'خوښوې': 37, 'هو': 38, 'پاکستان': 39, 'مينه': 40, 'سهار': 41, 'شپه': 42, 'بيا': 43, 'به': 44, 'ګورو': 45, 'دلته': 46, 'راشه': 47, 'کښېنه': 48, 'دروازه': 49, 'خلاصه': 50, 'کړکۍ': 51, 'بنده': 52, 'کوې': 53, 'کتاب': 54, 'لولم': 55, 'ملګری': 56, 'وږی': 57, 'ستړی': 58, 'مرسته': 59, 'راسره': 60, 'څو': 61, 'شل': 62, 'اوسېږې': 63, 'په': 64, 'سوات': 65, 'کې': 66, 'اوسېږم': 67, 'دي': 68, 'کمپيوټر': 69, 'پروګرامنګ': 70, 'ټېنسرفلو': 71, 'ځواکمن': 72, 'ژوره': 73, 'زړه': 74, 'پورې': 75, 'ماشين': 76, 'راتلونکې': 77, 'هوا': 78, 'ډېره': 79, 'ګرمه': 80, 'نن': 81, 'جمعه': 82, 'مصنوعي': 83, 'ځيرکتيا': 84, 'کول': 85, 'غواړم': 86, 'ما': 87, 'راکولی': 88, 'شې': 89, 'شته': 90, 'hp': 91, 'انټرنېټ': 92, 'ورو': 93, 'فلم': 94, 'ګورم': 95, 'ورور': 96, 'خور': 97, 'موږ': 98, 'کوونکي': 99, 'يو': 100, 'هغوی': 101, 'کرکټ': 102, 'لوبوي': 103, 'ماشوم': 104, 'ويده': 105, 'وکړئ': 106, 'اوبه': 107, 'راکړئ': 108, 'خوراک': 109, 'اړتيا': 110, 'موټر': 111, 'تېز': 112, 'پيشو': 113, 'د': 114, 'مېز': 115, 'لاندې': 116}\n",
+            "OrderedDict({'start': 50, 'سلام': 1, 'end': 50, 'ته': 9, 'څنګه': 1, 'يې': 1, 'زه': 12, 'ښه': 1, 'يم': 3, 'ستا': 2, 'نوم': 2, 'څه': 3, 'دی': 12, 'زما': 7, 'اويس': 1, 'چېرته': 2, 'ځې': 1, 'ښوونځي': 1, 'ځم': 1, 'چای': 2, 'خوښوې': 1, 'هو': 1, 'خوښوم': 2, 'پاکستان': 1, 'سره': 3, 'مينه': 1, 'لرم': 2, 'سهار': 1, 'مو': 2, 'پخير': 2, 'شپه': 1, 'بيا': 1, 'به': 1, 'ګورو': 1, 'دلته': 1, 'راشه': 1, 'کښېنه': 1, 'دروازه': 1, 'خلاصه': 1, 'کړه': 5, 'کړکۍ': 1, 'بنده': 1, 'کوې': 1, 'کتاب': 1, 'لولم': 1, 'دا': 4, 'ملګری': 1, 'وږی': 1, 'ستړی': 1, 'مهرباني': 2, 'وکړه': 2, 'مرسته': 1, 'راسره': 1, 'عمر': 2, 'څو': 1, 'کاله': 2, 'شل': 1, 'اوسېږې': 1, 'په': 1, 'سوات': 1, 'کې': 1, 'اوسېږم': 1, 'دي': 1, 'کمپيوټر': 1, 'پروګرامنګ': 1, 'ټېنسرفلو': 1, 'ځواکمن': 1, 'ژوره': 1, 'زده': 5, 'زړه': 1, 'پورې': 1, 'ده': 6, 'ماشين': 1, 'راتلونکې': 1, 'هوا': 1, 'ډېره': 1, 'ګرمه': 1, 'نن': 1, 'جمعه': 1, 'مصنوعي': 1, 'ځيرکتيا': 1, 'کول': 1, 'غواړم': 1, 'ما': 1, 'راکولی': 1, 'شې': 1, 'لپټاپ': 2, 'شته': 1, 'hp': 1, 'انټرنېټ': 1, 'ډېر': 2, 'ورو': 1, 'فلم': 1, 'ګورم': 1, 'هغه': 2, 'ورور': 1, 'خور': 1, 'موږ': 1, 'کوونکي': 1, 'يو': 1, 'هغوی': 1, 'کرکټ': 1, 'لوبوي': 1, 'ماشوم': 1, 'ويده': 1, 'وکړئ': 1, 'اوبه': 1, 'راکړئ': 1, 'خوراک': 1, 'اړتيا': 1, 'موټر': 1, 'تېز': 1, 'پيشو': 1, 'د': 1, 'مېز': 1, 'لاندې': 1})\n",
+            "117\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "**Convert Text → Sequences + Padding**"
+      ],
+      "metadata": {
+        "id": "obiuipuserpk"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from tensorflow.keras.preprocessing.sequence import pad_sequences"
+      ],
+      "metadata": {
+        "id": "18jgHNmjX_WP"
+      },
+      "execution_count": 30,
+      "outputs": []
+    }
+  ]
+}
